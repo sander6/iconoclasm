@@ -26,7 +26,7 @@ module Iconoclast
     private
     
     def parse(header_string)
-      header_string.scan(/^([\w-_]+):(.*)$/)inject({}) do |hash, (key, value)|
+      header_string.scan(/^([\w-_]+):(.*)$/).inject({}) do |hash, (key, value)|
         hash.merge(convert_header_key(key) => convert_header_value(value))
       end
     end
