@@ -10,7 +10,6 @@ begin
     gem.email = "sander@kgbweb.com"
     gem.homepage = "http://github.com/sander6/iconoclast"
     gem.authors = ["Sander Hartlage"]
-    gem.add_development_dependency "thoughtbot-shoulda", ">= 0"
     # gem is a Gem::Specification... see http://www.rubygems.org/read/chapter/20 for additional settings
   end
   Jeweler::GemcutterTasks.new
