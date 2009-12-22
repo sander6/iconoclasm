@@ -221,40 +221,7 @@ describe Iconoclast::Favicon do
         @favicon.save_path.should == "#{@path}/#{@favicon.name}"
       end
     end
-    
-    describe "to S3" do
-      before do
-        @klass  = stub('bucket class', :name => 'AWS::S3::Bucket')
-        @link   = "http://s3.amazonaws.com/bucketfulloffavicons"
-        @bucket = stub('bucket', :class => @klass, :public_link => @link, :put => true)
-      end
-      
-      it "should happen when providing a bucket to save" do
-        @favicon.expects(:save_to_s3)
-        @favicon.save(@bucket)
-      end
-      
-      it "should put the icon data in the bucket keyed to the icon's name" do
-        @bucket.expects(:put).with(@favicon.name, @favicon.data).returns(true)
-        @favicon.save_to_s3(@bucket)
-      end
-      
-      it "should set the save_path to the url to the resource" do
-        @favicon.save_to_s3(@bucket)
-        @favicon.save_path.should == "#{@bucket.public_link}/#{@favicon.name}"
-      end
-      
-      describe "when there's an error writing to the bucket" do
-        before do
-          @bucket.stubs(:put).returns(false)
-        end
         
-        it "should raise an error" do
-          lambda { @favicon.save_to_s3(@bucket) }.should raise_error(Iconoclast::S3Error)
-        end
-      end
-    end
-    
     describe "to some other kind of storage" do
       before do
         @storage = Object.new

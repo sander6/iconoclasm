@@ -1,29 +1,44 @@
 require 'tempfile'
+require 'mime/types'
 require 'uri'
 
 module Iconoclast
   class Favicon
     include Iconoclast::Downloader
     
-    attr_reader :size, :content_type, :url, :save_path
+    attr_reader :content_type, :url, :save_path
     attr_accessor :name
 
     def initialize(attributes = {})
       @url          = attributes[:url]
       @data         = attributes[:data]
-      @name         = attributes[:name] || parse_name_from(@url)
-      @headers      = attributes[:headers]
-      @content_type = @headers.content_type
-      @size         = @headers.content_length
+      @name         = attributes[:name]           || parse_name_from(@url)
+      headers       = attributes[:headers]
+      @content_type = attributes[:content_type]   || headers ? headers.content_type : nil
+      @size         = attributes[:content_length] || headers ? headers.content_length : nil
       @save_path    = nil
     end
     
-    def content_length
-      @size
+    def inspect
+      "#<Iconoclast::Favicon @url=#{url}, @name=#{name}, @content_type=#{content_type}, @size=#{size}, @save_path=#{save_path ? save_path : "nil"}>"
     end
+    
+    def size
+      @size ||= data.size
+    end
+    alias_method :content_length, :size
     
     def data
       @data ||= fetch_data
+    end
+    
+    def content_type
+      if @content_type
+        @content_type
+      else
+        mime = MIME::Types.of(name).first
+        @content_type = mime.content_type if mime
+      end
     end
     
     def valid?
@@ -50,15 +65,18 @@ module Iconoclast
       end
     end
     
-    def save(path_or_storage = nil)
-      @save_path = if path_or_storage.nil?
-        save_to_tempfile
-      elsif path_or_storage.is_a?(String)
-        save_to_file(path_or_storage)
-      elsif path_or_storage.class.name == "AWS::S3::Bucket" # prevents us from having to require S3
-        save_to_s3(path_or_storage)
+    def save(path_or_storage = nil, force = false)
+      if valid? && !force
+        warn("Saving an invalid favicon.") if !valid? && force
+        @save_path = if path_or_storage.nil?
+          save_to_tempfile
+        elsif path_or_storage.is_a?(String)
+          save_to_file(path_or_storage)
+        else
+          raise Iconoclast::RTFMError.new("invalid storage type")
+        end
       else
-        raise Iconoclast::RTFMError.new("invalid storage type")
+        raise Iconoclast::InvalidFavicon.new(url, content_type)
       end
     end
     
@@ -71,14 +89,6 @@ module Iconoclast
       path = File.expand_path(File.join(path, name))
       dump_data(File.new(path, File::CREAT|File::TRUNC|File::WRONLY))
       @save_path = path
-    end
-    
-    def save_to_s3(s3)
-      if s3.put(name, data)
-        @save_path = "#{s3.public_link}/#{name}"
-      else
-        raise Iconoclast::S3Error.new(s3.public_link)
-      end
     end
     
     def parse_name_from(url)
