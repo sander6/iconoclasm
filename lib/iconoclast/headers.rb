@@ -1,9 +1,11 @@
 module Iconoclast
   class Headers
+
+    attr_reader :version, :code, :message
     
     def initialize(header_string)
-      @http_response  = header_string.lines.first.chomp
-      @header_hash    = parse(header_string)
+      parse_http_response(header_string.lines.first.chomp)
+      @header_hash    = parse_header_string(header_string)
     end
     
     def [](header)
@@ -13,6 +15,7 @@ module Iconoclast
     def content_type
       @content_type ||= self['content_type']
     end
+    alias_method :type, :content_type
     
     def content_length
       @content_length ||= self['content_length']
@@ -25,8 +28,8 @@ module Iconoclast
     
     private
     
-    def parse(header_string)
-      header_string.scan(/^([\w-_]+):(.*)$/).inject({}) do |hash, (key, value)|
+    def parse_header_string(header_string)
+      header_string.scan(/^([^:]+):(.*)$/).inject({}) do |hash, (key, value)|
         hash.merge(convert_header_key(key) => convert_header_value(value))
       end
     end
@@ -36,12 +39,21 @@ module Iconoclast
     end
     
     def convert_header_value(value)
-      if value =~ /^\d+$/
+      if value =~ /^\s*\d+\s*$/
         value.to_i
       else
-        value
+        value.strip
       end
     end
     
+    def parse_http_response(response)
+      if response.match(/HTTP\/(\d\.\d)\s*(\d{3})\s*(.*)/)
+        @version  = $1
+        @code     = $2.to_i
+        @message  = $3.strip
+      else
+        raise Iconoclast::HTTPError.new(nil, response)
+      end
+    end
   end
 end
