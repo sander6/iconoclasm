@@ -37,13 +37,18 @@ module Iconoclast
     end
     
     def message
-      "Iconoclast doesn't work that way (#{reason})"
+      "Iconoclast doesn't work that way (#{@reason})"
     end
   end
   
-  class S3Error < Iconoclast::Error
+  class InvalidFavicon < Iconoclast::Error
+    def initialize(url, content_type)
+      super(url)
+      @content_type = content_type
+    end
+    
     def message
-      "There was a error connecting to the S3 bucket at #{@url}"
+      "The favicon from #{@url} is invalid (content type is #{@content_type})"
     end
   end
-end    
+end
