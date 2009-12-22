@@ -3,7 +3,8 @@ require File.expand_path(File.dirname(__FILE__) + '/../helper')
 describe Iconoclast::Favicon do
 
   before do
-    @headers    = stub('headers', :content_type => 'image/vnd.microsoft.icon', :content_length => 100)
+    @size       = 100
+    @headers    = stub('headers', :content_type => 'image/vnd.microsoft.icon', :content_length => @size)
     @name       = 'favicon.ico'
     @url        = "http://www.website.com/#{@name}"
     @attributes = {
@@ -68,6 +69,74 @@ describe Iconoclast::Favicon do
         @favicon.expects(:fetch_data).once.returns(@data)
         @favicon.data
         @favicon.data
+      end
+    end
+  end
+  
+  describe "accessing the size attribute" do
+    before do
+      @data = "THIS IS SOME DATA!"
+      @size = 100
+    end
+    
+    describe "when the size was supplied on initialization" do
+      before do
+        @favicon = Iconoclast::Favicon.new(@attributes.merge({:data => @data, :content_length => @size}))
+      end
+      
+      it "should return the supplied size" do
+        @favicon.size.should == @size
+      end
+      
+      it "should not check the length of the data" do
+        @favicon.data.expects(:size).never
+        @favicon.size
+      end
+    end
+    
+    describe "when the size was not supplied on initialization" do
+      before do
+        @headers.stubs(:content_length).returns(nil)
+        @favicon = Iconoclast::Favicon.new(@attributes.merge({:data => @data, :content_length => nil}))
+        @favicon.instance_variable_get(:@size).should be_nil
+      end
+      
+      it "should return the size of the data" do
+        @favicon.size.should == @data.size
+      end      
+    end
+  end
+  
+  describe "accessing the content type attribute" do
+    before do
+      @content_type = 'image/vnd.microsoft.icon'
+    end
+    
+    describe "when the content type was supplied on initialization" do
+      before do
+        @favicon = Iconoclast::Favicon.new(@attributes.merge({:content_type => @content_type}))
+      end
+      
+      it "should return the supplied content_type" do
+        @favicon.content_type.should == @content_type
+      end
+      
+      it "should not try to check it" do
+        ::MIME::Types.expects(:of).never
+        @favicon.content_type
+      end
+    end
+    
+    describe "when the content type was not supplied on initialization" do
+      before do
+        @headers.stubs(:content_type).returns(nil)
+        @favicon  = Iconoclast::Favicon.new(@attributes.merge({:content_type => nil}))
+        @mime     = mock('mime type', :content_type => @content_type)
+      end
+      
+      it "should check the content type of the file name using the mime types library and return the first" do
+        ::MIME::Types.expects(:of).with(@favicon.name).returns([@mime])
+        @favicon.content_type.should == @content_type
       end
     end
   end
