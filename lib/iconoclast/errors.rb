@@ -40,4 +40,10 @@ module Iconoclast
       "Iconoclast doesn't work that way (#{reason})"
     end
   end
+  
+  class S3Error < Iconoclast::Error
+    def message
+      "There was a error connecting to the S3 bucket at #{@url}"
+    end
+  end
 end    
