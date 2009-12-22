@@ -1,4 +1,3 @@
-require 'curl'
 require 'nokogiri'
 require 'uri'
 
@@ -9,10 +8,10 @@ module Iconoclast
       base.class_eval { include Iconoclast::Downloader }
     end
     
-    def extract_favicon_from(url)
+    def extract_favicon_from(url, content = nil)
       catch(:done) do
         base_url  = base_url_of(url)
-        extract_favicon_from_head_of(base_url)
+        extract_favicon_from_head_of(base_url, content)
         extract_favicon_from_naive_guess(base_url)
         raise Iconoclast::MissingFavicon.new(base_url)
       end
@@ -20,17 +19,22 @@ module Iconoclast
     
     private
     
-    def extract_favicon_from_head_of(base_url)
-      response      = get(base_url)
-      if response.response_code == 200
-        headers       = Iconoclast::Headers.new(response.header_str)
-        document      = Nokogiri::XML(response.body_str)
+    def extract_favicon_from_head_of(base_url, content = nil)
+      if document = document_from(base_url, content)
         favicon_links = find_favicon_links_in(document)
         throw(:done, {
-          :url => href_of(favicon_links.first),
-          :content_type => type_of(favicon_links.first),
-          :headers => headers
+          :url          => href_of(favicon_links.first),
+          :content_type => type_of(favicon_links.first)
         }) unless favicon_links.empty?
+      end
+    end
+
+    def document_from(base_url, content = nil)
+      if content
+        Nokogiri::XML(content)
+      else
+        response = get(base_url)
+        Nokogiri::XML(response.body_str) if response.response_code == 200
       end
     end
     
@@ -40,10 +44,10 @@ module Iconoclast
       headers   = Iconoclast::Headers.new(response.header_str)
       if response.response_code == 200
         throw(:done, {
-          :url => naive_url,
-          :headers => headers,
-          :content_type => headers.content_type,
-          :data => response.body_str
+          :url            => naive_url,
+          :content_length => header.content_length,
+          :content_type   => headers.content_type,
+          :data           => response.body_str
         })
       end
     end
