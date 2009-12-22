@@ -13,21 +13,28 @@ module Iconoclast
   end
   
   class HTTPError < Iconoclast::Error
-    def initialize(url, http_response)
+    def initialize(url, response)
       super(url)
-      @response = http_response
+      @response = response
     end
     
     def message
-      "There was a problem getting #{@url} (#{http_error_reason})"
+      msg = ""
+      msg += "There was a problem getting #{@url} " if @url
+      msg += "(#{http_error_reason})"
+      msg
     end
 
-    def http_error_message
-      "#{@response.response_code}: #{http_error_reason}"
+    def code
+      @response.respond_to?(:response_code) ? @response.response_code : @response[/\d{3}/]
     end
-    
+
     def http_error_reason
-      @response.header_str[/(?<=\d{3}\s)(.*)$/].chomp
+      @response.respond_to?(:header_str) ? @response.header_str[/(?<=\d{3}\s)(.*)$/].chomp : @response
+    end    
+
+    def http_error_message
+      "#{@code}: #{http_error_reason}"
     end    
   end
   
