@@ -5,16 +5,21 @@ module Iconoclast
   class Favicon
     include Iconoclast::Downloader
     
-    attr_reader :size, :content_type, :url
+    attr_reader :size, :content_type, :url, :save_path
+    attr_accessor :name
 
     def initialize(attributes = {})
       @url          = attributes[:url]
       @data         = attributes[:data]
-      @name         = parse_name_from(@url)
+      @name         = attributes[:name] || parse_name_from(@url)
       @headers      = attributes[:headers]
       @content_type = @headers.content_type
       @size         = @headers.content_length
       @save_path    = nil
+    end
+    
+    def content_length
+      @size
     end
     
     def data
@@ -48,8 +53,8 @@ module Iconoclast
     def save(path_or_storage = nil)
       @save_path = if path_or_storage.nil?
         save_to_tempfile
-      elsif path_or_storage.is_a?(String) && File.exists?(path_or_storage)
-        save_to_disk(path_or_storage)
+      elsif path_or_storage.is_a?(String)
+        save_to_file(path_or_storage)
       elsif path_or_storage.class.name == "AWS::S3::Bucket" # prevents us from having to require S3
         save_to_s3(path_or_storage)
       else
@@ -58,31 +63,32 @@ module Iconoclast
     end
     
     def save_to_tempfile
-      tfile = Tempfile.new(name)
-      tfile.write(data)
-      tfile.close
-      tfile.path
+      tfile = dump_data(Tempfile.new(name))
+      @save_path = tfile.path
     end
 
-    def save_to_disk(path)
-      path = "#{path}/#{name}" unless path.match(/\.[\w\d]{1,4}$/)
-      file = File.new(path, File::CREAT|File::TRUNC|File::WRONLY)
-      file.write(data)
-      file.close
-      path
+    def save_to_file(path)
+      path = File.expand_path(File.join(path, name))
+      dump_data(File.new(path, File::CREAT|File::TRUNC|File::WRONLY))
+      @save_path = path
     end
     
     def save_to_s3(s3)
       if s3.put(name, data)
-        "#{s3.public_link}/#{name}"
+        @save_path = "#{s3.public_link}/#{name}"
       else
-        raise Iconoclast::Error
+        raise Iconoclast::S3Error.new(s3.public_link)
       end
     end
     
     def parse_name_from(url)
-      uri = URI.parse(url)
-      uri.path.split('/').last
+      URI.parse(url).path.split('/').last
+    end
+    
+    def dump_data(file)
+      file.write(data)
+      file.close
+      file
     end
   end
 end
