@@ -21,12 +21,16 @@ module Iconoclast
     private
     
     def extract_favicon_from_head_of(base_url)
-      response      = get(naive_url)
+      response      = get(base_url)
       if response.response_code == 200
         headers       = Iconoclast::Headers.new(response.header_str)
         document      = Nokogiri::XML(response.body_str)
         favicon_links = find_favicon_links_in(document)
-        throw(:done, { :url => href_of(favicon_links.first), :headers => headers }) unless favicon_links.empty?
+        throw(:done, {
+          :url => href_of(favicon_links.first),
+          :content_type => type_of(favicon_links.first),
+          :headers => headers
+        }) unless favicon_links.empty?
       end
     end
     
@@ -35,7 +39,12 @@ module Iconoclast
       response  = get(naive_url)
       headers   = Iconoclast::Headers.new(response.header_str)
       if response.response_code == 200
-        throw(:done, { :url => naive_url, :headers => headers, :data => response.body_str })
+        throw(:done, {
+          :url => naive_url,
+          :headers => headers,
+          :content_type => headers.content_type,
+          :data => response.body_str
+        })
       end
     end
     
@@ -53,8 +62,17 @@ module Iconoclast
     end
     
     def href_of(node)
-      href = node.attributes.inject({}) { |hash, (key, value)| hash.merge(key.downcase => value) }['href']
+      href = normal_node_attributes(node)['href']
       href.value if href
+    end
+    
+    def type_of(node)
+      type = normal_node_attributes(node)['type']
+      type.value if type
+    end
+    
+    def normal_node_attributes(node)
+      node.attributes.inject({}) { |hash, (key, value)| hash.merge(key.downcase => value) }
     end
   end
 end
