@@ -8,7 +8,7 @@ describe Iconoclast do
     end
     
     it "should extract the favicon for the given url" do
-      Iconoclast.expects(:extract_favicon_from).with(@url)
+      Iconoclast.expects(:extract_favicon_from).with(@url, nil)
       Iconoclast::Favicon.stubs(:new)
       Iconoclast.extract(@url)
     end

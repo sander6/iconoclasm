@@ -10,8 +10,8 @@ module Iconoclast
   class << self
     include Iconoclast::Extractor
     
-    def extract(url)
-      Iconoclast::Favicon.new(extract_favicon_from(url))
+    def extract(url, content = nil)
+      Iconoclast::Favicon.new(extract_favicon_from(url, content))
     end
   end
   
