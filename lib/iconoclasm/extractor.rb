@@ -10,17 +10,16 @@ module Iconoclasm
     
     def extract_favicon_from(url, content = nil)
       catch(:done) do
-        base_url  = base_url_of(url)
-        extract_favicon_from_head_of(base_url, content)
-        extract_favicon_from_naive_guess(base_url)
-        raise Iconoclasm::MissingFavicon.new(base_url)
+        extract_favicon_from_head_of(url, content)
+        extract_favicon_from_naive_guess(base_url_of(url))
+        raise Iconoclasm::MissingFavicon.new(url)
       end
     end
     
     private
     
-    def extract_favicon_from_head_of(base_url, content = nil)
-      if document = document_from(base_url, content)
+    def extract_favicon_from_head_of(url, content = nil)
+      if document = document_from(url, content)
         favicon_links = find_favicon_links_in(document)
         throw(:done, {
           :url          => href_of(favicon_links.first),
@@ -29,11 +28,11 @@ module Iconoclasm
       end
     end
 
-    def document_from(base_url, content = nil)
+    def document_from(url, content = nil)
       if content
         Nokogiri::XML(content)
       else
-        response = get(base_url)
+        response = get(url)
         Nokogiri::XML(response.body_str) if response.response_code == 200
       end
     end
@@ -45,7 +44,7 @@ module Iconoclasm
       if response.response_code == 200
         throw(:done, {
           :url            => naive_url,
-          :content_length => header.content_length,
+          :content_length => headers.content_length,
           :content_type   => headers.content_type,
           :data           => response.body_str
         })
@@ -53,7 +52,7 @@ module Iconoclasm
     end
     
     def find_favicon_links_in(document)
-      document.xpath('//link[favicon_link(.)]', Class.new {
+      document.css('link:favicon_link', Class.new {
         def favicon_link(node_set)
           node_set.find_all { |node| node['rel'] && node['rel'] =~ /^(?:shortcut\s)?icon$/i }
         end
