@@ -22,7 +22,7 @@ module Iconoclasm
       if document = document_from(url, content)
         favicon_links = find_favicon_links_in(document)
         throw(:done, {
-          :url          => href_of(favicon_links.first),
+          :url          => href_of(favicon_links.first, :base_url => base_url_of(url)),
           :content_type => type_of(favicon_links.first)
         }) unless favicon_links.empty?
       end
@@ -33,15 +33,15 @@ module Iconoclasm
         Nokogiri::XML(content)
       else
         response = get(url)
-        Nokogiri::XML(response.body_str) if response.response_code == 200
+        Nokogiri::XML(response.body) if response.code == 200
       end
     end
     
     def extract_favicon_from_naive_guess(base_url)
       naive_url = "#{base_url}/favicon.ico"
       response  = get(naive_url)
-      headers   = Iconoclasm::Headers.new(response.header_str)
-      if response.response_code == 200
+      headers   = Iconoclasm::Headers.new(response.headers)
+      if response.code == 200
         throw(:done, {
           :url            => naive_url,
           :content_length => headers.content_length,
@@ -64,9 +64,15 @@ module Iconoclasm
       "#{uri.scheme}://#{uri.host}"
     end
     
-    def href_of(node)
+    def href_of(node, options = {})
       href = normal_node_attributes(node)['href']
-      href.value if href
+      if href
+        relative?(href.value) ? "#{options[:base_url]}#{href.value}" : href.value
+      end
+    end
+    
+    def relative?(href)
+      href =~ /^[\.\/]/
     end
     
     def type_of(node)

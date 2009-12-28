@@ -58,8 +58,8 @@ module Iconoclasm
     
     def fetch_data
       response = get(url)
-      if response.response_code == 200
-        response.body_str
+      if response.code == 200
+        response.body
       else
         raise Iconoclasm::HTTPError.new(url, response)
       end

@@ -20,7 +20,7 @@ describe Iconoclasm::Extractor do
     end
     
     it "should try to find the favicon path in the head of the content" do
-      @thing.expects(:extract_favicon_from_head_of).with(@base_url, nil).throws(:done)
+      @thing.expects(:extract_favicon_from_head_of).with(@url, nil).throws(:done)
       @thing.extract_favicon_from(@url)
     end
     
@@ -69,7 +69,7 @@ describe Iconoclasm::Extractor do
     
     describe "when content isn't already provided" do
       before do
-        @response = mock('http response', :response_code => 200, :body_str => "")
+        @response = mock('http response', :code => 200, :body => "")
       end
       
       it "should go get the content" do
@@ -100,7 +100,7 @@ describe Iconoclasm::Extractor do
           before do
             @href = 'http://www.website.com/images/favicon.ico'
             @type = 'image/vnd.microsoft.icon'
-            @thing.expects(:href_of).with(@link).returns(@href)
+            @thing.expects(:href_of).with(@link, instance_of(Hash)).returns(@href)
             @thing.expects(:type_of).with(@link).returns(@type)
             @hash = catch(:done) { @thing.__send__(:extract_favicon_from_head_of, @url, @content) } 
           end

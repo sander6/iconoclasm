@@ -10,39 +10,30 @@ describe Iconoclasm::Downloader do
   end
   
   describe "GETting a url" do
-    it "should GET the url using curl easy" do
-      Curl::Easy.expects(:http_get).with(@url)
+    it "should GET the url using Typheous" do
+      Typhoeus::Request.expects(:get).with(@url, instance_of(Hash))
       @thing.get(@url)
     end
     
     it "should set the user agent to the default user agent" do
-      @curl.stubs(:follow_location=)
-      headers = mock('headers')
-      Curl::Easy.stubs(:http_get).yields(@curl)
-      @curl.expects(:headers).returns(headers)
-      headers.expects(:[]=).with('User-Agent', Iconoclasm::Downloader.user_agent)
+      Typhoeus::Request.expects(:get).with(instance_of(String), has_entry(:user_agent => Iconoclasm::Downloader.user_agent))
       @thing.get(@url)
     end
     
     it "should follow redirects" do
-      @curl.stubs(:headers).returns({})
-      Curl::Easy.stubs(:http_get).yields(@curl)
-      @curl.expects(:follow_location=).with(true)
+      Typhoeus::Request.expects(:get).with(instance_of(String), has_entry(:follow_location => true))
       @thing.get(@url)
     end
   end
   
   describe "HEADing a url" do
-    it "should HEAD the url using curl easy" do
-      Curl::Easy.expects(:http_head).with(@url)
+    it "should HEAD the url using Typhoeus" do
+      Typhoeus::Request.expects(:head).with(@url, instance_of(Hash))
       @thing.head(@url)
     end
     
     it "should set the user agent to the default user agent" do
-      headers = mock('headers')
-      Curl::Easy.stubs(:http_head).yields(@curl)
-      @curl.expects(:headers).returns(headers)
-      headers.expects(:[]=).with('User-Agent', Iconoclasm::Downloader.user_agent)
+      Typhoeus::Request.expects(:head).with(instance_of(String), has_entry(:user_agent => Iconoclasm::Downloader.user_agent))
       @thing.head(@url)
     end
   end

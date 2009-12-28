@@ -149,7 +149,7 @@ describe Iconoclasm::Favicon do
     
     it "should request the icon image" do
       @favicon.expects(:get).returns(@response)
-      @response.stubs(:response_code => 200, :body_str => "IMAGE DATA!")
+      @response.stubs(:code => 200, :body => "IMAGE DATA!")
       @favicon.fetch_data      
     end
     
@@ -157,11 +157,11 @@ describe Iconoclasm::Favicon do
       before do
         @favicon.stubs(:get).returns(@response)
         @data = "THIS IS ALSO TOTALLY SOME IMAGE DATA HAR HAR HAR!"
-        @response.expects(:response_code).returns(200)
+        @response.expects(:code).returns(200)
       end
       
       it "should return the content of the request (the binary image data)" do
-        @response.expects(:body_str).returns(@data)
+        @response.expects(:body).returns(@data)
         @favicon.fetch_data.should == @data
       end
     end
@@ -169,7 +169,7 @@ describe Iconoclasm::Favicon do
     describe "when the HTTP request is not successful" do
       before do
         @favicon.stubs(:get).returns(@response)
-        @response.expects(:response_code).returns(400)
+        @response.expects(:code).returns(400)
       end
       
       it "should raise an HTTP error" do

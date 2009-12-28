@@ -1,4 +1,4 @@
-require 'curl'
+require 'typhoeus'
 
 module Iconoclasm
   module Downloader
@@ -13,18 +13,16 @@ module Iconoclasm
       @@user_agent
     end
     
+    def user_agent
+      @@user_agent
+    end
+    
     def get(url)
-      Curl::Easy.http_get(url) do |curl|
-        curl.headers['User-Agent']  = Iconoclasm::Downloader.user_agent
-        curl.follow_location        = true
-      end
+      Typhoeus::Request.get(url, :user_agent => user_agent, :follow_location => true)
     end
     
     def head(url)
-      Curl::Easy.http_head(url) do |curl|
-        curl.headers['User-Agent']  = Iconoclasm::Downloader.user_agent
-      end
+      Typhoeus::Request.head(url, :user_agent => user_agent)
     end
-    
   end
 end

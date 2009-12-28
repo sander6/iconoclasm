@@ -30,12 +30,20 @@ module Iconoclasm
     end
 
     def http_error_reason
-      @response.respond_to?(:header_str) ? @response.header_str[/(?<=\d{3}\s)(.*)$/].chomp : @response
-    end    
+      @response.respond_to?(:header_str) ? error_reason : @response
+    end
 
     def http_error_message
       "#{@code}: #{http_error_reason}"
-    end    
+    end
+    
+    private
+    
+    def error_reason
+      first_line = @response.header_str.split('\n').first.chomp
+      first_line.match(/\d{3}\s(.*)$/)
+      $1
+    end
   end
   
   class RTFMError < Iconoclasm::Error
