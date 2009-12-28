@@ -14,8 +14,8 @@ module Iconoclasm
       @data         = attributes[:data]
       @name         = attributes[:name]           || parse_name_from(@url)
       headers       = attributes[:headers]
-      @content_type = attributes[:content_type]   || headers ? headers.content_type : nil
-      @size         = attributes[:content_length] || headers ? headers.content_length : nil
+      @content_type = attributes[:content_type]   ? attributes[:content_type] : headers ? headers.content_type : nil
+      @size         = attributes[:content_length] ? attributes[:content_length] : headers ? headers.content_length : nil
       @save_path    = nil
     end
     
