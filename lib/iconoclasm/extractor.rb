@@ -1,11 +1,11 @@
 require 'nokogiri'
 require 'uri'
 
-module Iconoclast
+module Iconoclasm
   module Extractor
     
     def self.included(base)
-      base.class_eval { include Iconoclast::Downloader }
+      base.class_eval { include Iconoclasm::Downloader }
     end
     
     def extract_favicon_from(url, content = nil)
@@ -13,7 +13,7 @@ module Iconoclast
         base_url  = base_url_of(url)
         extract_favicon_from_head_of(base_url, content)
         extract_favicon_from_naive_guess(base_url)
-        raise Iconoclast::MissingFavicon.new(base_url)
+        raise Iconoclasm::MissingFavicon.new(base_url)
       end
     end
     
@@ -41,7 +41,7 @@ module Iconoclast
     def extract_favicon_from_naive_guess(base_url)
       naive_url = "#{base_url}/favicon.ico"
       response  = get(naive_url)
-      headers   = Iconoclast::Headers.new(response.header_str)
+      headers   = Iconoclasm::Headers.new(response.header_str)
       if response.response_code == 200
         throw(:done, {
           :url            => naive_url,

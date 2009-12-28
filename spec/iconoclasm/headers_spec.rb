@@ -1,6 +1,6 @@
 require File.expand_path(File.dirname(__FILE__) + '/../helper')
 
-describe Iconoclast::Headers do
+describe Iconoclasm::Headers do
   
   before do
     @http_response  = "HTTP/1.1 200 OK"
@@ -9,7 +9,7 @@ describe Iconoclast::Headers do
     @content_type   = "image/x-icon"
     @content_length = 3638
     @header_string  = "#{@http_response}\r\nDate: Tue, 22 Dec 2009 21:15:31 GMT\r\nServer: #{@server}\r\nVary: Host,User-Agent\r\nLast-Modified: #{@last_modified}\r\nETag: \"e36-432ce70534600\"\r\nAccept-Ranges: bytes\r\nContent-Length: #{@content_length}\r\nContent-Type: #{@content_type}\r\n\r\n"
-    @headers = Iconoclast::Headers.new(@header_string)
+    @headers = Iconoclasm::Headers.new(@header_string)
   end
   
   describe "parsing the HTTP response" do

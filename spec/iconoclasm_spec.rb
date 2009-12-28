@@ -1,6 +1,6 @@
 require File.expand_path(File.dirname(__FILE__) + '/helper')
 
-describe Iconoclast do
+describe Iconoclasm do
   
   describe "#extract" do
     before do
@@ -8,16 +8,16 @@ describe Iconoclast do
     end
     
     it "should extract the favicon for the given url" do
-      Iconoclast.expects(:extract_favicon_from).with(@url, nil)
-      Iconoclast::Favicon.stubs(:new)
-      Iconoclast.extract(@url)
+      Iconoclasm.expects(:extract_favicon_from).with(@url, nil)
+      Iconoclasm::Favicon.stubs(:new)
+      Iconoclasm.extract(@url)
     end
     
     it "should make a new Favicon instance" do
       favicon = stub('favicon')
-      Iconoclast.stubs(:extract_favicon_from).returns(favicon)
-      Iconoclast::Favicon.expects(:new).with(favicon)
-      Iconoclast.extract(@url)
+      Iconoclasm.stubs(:extract_favicon_from).returns(favicon)
+      Iconoclasm::Favicon.expects(:new).with(favicon)
+      Iconoclasm.extract(@url)
     end
   end
   

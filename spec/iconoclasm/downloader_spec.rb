@@ -1,9 +1,9 @@
 require File.expand_path(File.dirname(__FILE__) + '/../helper')
 
-describe Iconoclast::Downloader do
+describe Iconoclasm::Downloader do
 
   before do
-    class Thing; include Iconoclast::Downloader; end
+    class Thing; include Iconoclasm::Downloader; end
     @thing  = Thing.new
     @url    = 'http://www.website.com'
     @curl   = mock('curl')
@@ -20,7 +20,7 @@ describe Iconoclast::Downloader do
       headers = mock('headers')
       Curl::Easy.stubs(:http_get).yields(@curl)
       @curl.expects(:headers).returns(headers)
-      headers.expects(:[]=).with('User-Agent', Iconoclast::Downloader.user_agent)
+      headers.expects(:[]=).with('User-Agent', Iconoclasm::Downloader.user_agent)
       @thing.get(@url)
     end
     
@@ -42,7 +42,7 @@ describe Iconoclast::Downloader do
       headers = mock('headers')
       Curl::Easy.stubs(:http_head).yields(@curl)
       @curl.expects(:headers).returns(headers)
-      headers.expects(:[]=).with('User-Agent', Iconoclast::Downloader.user_agent)
+      headers.expects(:[]=).with('User-Agent', Iconoclasm::Downloader.user_agent)
       @thing.head(@url)
     end
   end

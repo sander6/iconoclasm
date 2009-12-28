@@ -2,9 +2,9 @@ require 'tempfile'
 require 'mime/types'
 require 'uri'
 
-module Iconoclast
+module Iconoclasm
   class Favicon
-    include Iconoclast::Downloader
+    include Iconoclasm::Downloader
     
     attr_reader :content_type, :url, :save_path
     attr_accessor :name
@@ -20,7 +20,7 @@ module Iconoclast
     end
     
     def inspect
-      "#<Iconoclast::Favicon @url=#{url}, @name=#{name}, @content_type=#{content_type}, @size=#{size}, @save_path=#{save_path ? save_path : "nil"}>"
+      "#<Iconoclasm::Favicon @url=#{url}, @name=#{name}, @content_type=#{content_type}, @size=#{size}, @save_path=#{save_path ? save_path : "nil"}>"
     end
     
     def size
@@ -61,7 +61,7 @@ module Iconoclast
       if response.response_code == 200
         response.body_str
       else
-        raise Iconoclast::HTTPError.new(url, response)
+        raise Iconoclasm::HTTPError.new(url, response)
       end
     end
     
@@ -73,10 +73,10 @@ module Iconoclast
         elsif path_or_storage.is_a?(String)
           save_to_file(path_or_storage)
         else
-          raise Iconoclast::RTFMError.new("invalid storage type")
+          raise Iconoclasm::RTFMError.new("invalid storage type")
         end
       else
-        raise Iconoclast::InvalidFavicon.new(url, content_type)
+        raise Iconoclasm::InvalidFavicon.new(url, content_type)
       end
     end
     

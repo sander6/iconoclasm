@@ -1,4 +1,4 @@
-module Iconoclast
+module Iconoclasm
 
   class Error < StandardError
     def initialize(url)
@@ -6,13 +6,13 @@ module Iconoclast
     end
   end
 
-  class MissingFavicon < Iconoclast::Error
+  class MissingFavicon < Iconoclasm::Error
     def message
       "#{@url} doesn't seem to have a favicon"
     end
   end
   
-  class HTTPError < Iconoclast::Error
+  class HTTPError < Iconoclasm::Error
     def initialize(url, response)
       super(url)
       @response = response
@@ -38,17 +38,17 @@ module Iconoclast
     end    
   end
   
-  class RTFMError < Iconoclast::Error
+  class RTFMError < Iconoclasm::Error
     def initialize(reason)
       @reason = reason
     end
     
     def message
-      "Iconoclast doesn't work that way (#{@reason})"
+      "Iconoclasm doesn't work that way (#{@reason})"
     end
   end
   
-  class InvalidFavicon < Iconoclast::Error
+  class InvalidFavicon < Iconoclasm::Error
     def initialize(url, content_type)
       super(url)
       @content_type = content_type

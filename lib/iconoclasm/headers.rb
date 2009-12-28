@@ -1,4 +1,4 @@
-module Iconoclast
+module Iconoclasm
   class Headers
 
     attr_reader :version, :code, :message
@@ -52,7 +52,7 @@ module Iconoclast
         @code     = $2.to_i
         @message  = $3.strip
       else
-        raise Iconoclast::HTTPError.new(nil, response)
+        raise Iconoclasm::HTTPError.new(nil, response)
       end
     end
   end

@@ -1,15 +1,15 @@
 require File.expand_path(File.dirname(__FILE__) + '/../helper')
 
-describe Iconoclast::Extractor do
+describe Iconoclasm::Extractor do
   
   before do
-    class Thing; include Iconoclast::Extractor; end
+    class Thing; include Iconoclasm::Extractor; end
     @thing = Thing.new
   end
   
   describe "requiring the module" do
     it "should also require the Downloader module" do
-      Thing.included_modules.should include(Iconoclast::Downloader)
+      Thing.included_modules.should include(Iconoclasm::Downloader)
     end
   end
   
@@ -42,7 +42,7 @@ describe Iconoclast::Extractor do
       end
       
       it "should raise an error" do
-        lambda { @thing.extract_favicon_from(@url) }.should raise_error(Iconoclast::MissingFavicon)
+        lambda { @thing.extract_favicon_from(@url) }.should raise_error(Iconoclasm::MissingFavicon)
       end
     end
   end

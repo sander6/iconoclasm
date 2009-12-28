@@ -1,6 +1,6 @@
 require File.expand_path(File.dirname(__FILE__) + '/../helper')
 
-describe Iconoclast::Favicon do
+describe Iconoclasm::Favicon do
 
   before do
     @size       = 100
@@ -15,7 +15,7 @@ describe Iconoclast::Favicon do
   
   describe "initialization" do
     before do
-      @favicon = Iconoclast::Favicon.new(@attributes)
+      @favicon = Iconoclasm::Favicon.new(@attributes)
     end
     
     it "should set the content type to the content type supplied in the headers" do
@@ -42,7 +42,7 @@ describe Iconoclast::Favicon do
     
     describe "when the data was supplied on intialization" do
       before do
-        @favicon = Iconoclast::Favicon.new(@attributes.merge({:data => @data}))
+        @favicon = Iconoclasm::Favicon.new(@attributes.merge({:data => @data}))
       end
       
       it "should return the supplied data" do
@@ -57,7 +57,7 @@ describe Iconoclast::Favicon do
     
     describe "when data was not supplied on initialization" do
       before do
-        @favicon = Iconoclast::Favicon.new(@attributes.merge({:data => nil}))
+        @favicon = Iconoclasm::Favicon.new(@attributes.merge({:data => nil}))
       end
       
       it "should fetch the data from the internets and return it" do
@@ -81,7 +81,7 @@ describe Iconoclast::Favicon do
     
     describe "when the size was supplied on initialization" do
       before do
-        @favicon = Iconoclast::Favicon.new(@attributes.merge({:data => @data, :content_length => @size}))
+        @favicon = Iconoclasm::Favicon.new(@attributes.merge({:data => @data, :content_length => @size}))
       end
       
       it "should return the supplied size" do
@@ -97,7 +97,7 @@ describe Iconoclast::Favicon do
     describe "when the size was not supplied on initialization" do
       before do
         @headers.stubs(:content_length).returns(nil)
-        @favicon = Iconoclast::Favicon.new(@attributes.merge({:data => @data, :content_length => nil}))
+        @favicon = Iconoclasm::Favicon.new(@attributes.merge({:data => @data, :content_length => nil}))
         @favicon.instance_variable_get(:@size).should be_nil
       end
       
@@ -114,7 +114,7 @@ describe Iconoclast::Favicon do
     
     describe "when the content type was supplied on initialization" do
       before do
-        @favicon = Iconoclast::Favicon.new(@attributes.merge({:content_type => @content_type}))
+        @favicon = Iconoclasm::Favicon.new(@attributes.merge({:content_type => @content_type}))
       end
       
       it "should return the supplied content_type" do
@@ -130,7 +130,7 @@ describe Iconoclast::Favicon do
     describe "when the content type was not supplied on initialization" do
       before do
         @headers.stubs(:content_type).returns(nil)
-        @favicon  = Iconoclast::Favicon.new(@attributes.merge({:content_type => nil}))
+        @favicon  = Iconoclasm::Favicon.new(@attributes.merge({:content_type => nil}))
         @mime     = mock('mime type', :content_type => @content_type)
       end
       
@@ -143,7 +143,7 @@ describe Iconoclast::Favicon do
   
   describe "fetching the image data" do
     before do
-      @favicon  = Iconoclast::Favicon.new(@attributes)
+      @favicon  = Iconoclasm::Favicon.new(@attributes)
       @response = mock('http response')
     end
     
@@ -173,14 +173,14 @@ describe Iconoclast::Favicon do
       end
       
       it "should raise an HTTP error" do
-        lambda { @favicon.fetch_data }.should raise_error(Iconoclast::HTTPError)
+        lambda { @favicon.fetch_data }.should raise_error(Iconoclasm::HTTPError)
       end
     end
   end
   
   describe "determining the validity of the favicon" do
     before do
-      @favicon = Iconoclast::Favicon.new(@attributes.merge({:data => "IMAGE DATA!"}))
+      @favicon = Iconoclasm::Favicon.new(@attributes.merge({:data => "IMAGE DATA!"}))
     end
     
     describe "when the content is zero-length" do
@@ -239,7 +239,7 @@ describe Iconoclast::Favicon do
   
   describe "saving the favicon" do
     before do
-      @favicon = Iconoclast::Favicon.new(@attributes.merge({:data => "IMAGE DATA!"}))
+      @favicon = Iconoclasm::Favicon.new(@attributes.merge({:data => "IMAGE DATA!"}))
     end
     
     describe "to a tempfile" do
@@ -297,7 +297,7 @@ describe Iconoclast::Favicon do
       end
       
       it "should raise an error" do
-        lambda { @favicon.save(@storage) }.should raise_error(Iconoclast::RTFMError)
+        lambda { @favicon.save(@storage) }.should raise_error(Iconoclasm::RTFMError)
       end
     end
   end
