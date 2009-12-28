@@ -10,8 +10,8 @@ To get the favicon for a page, do:
 
 This will go and do a bunch of GETs (two or three, actually) on the url given. If you've already got the content and want to skip one of the GETs, you can pass the content in as the second argument.
 
-`content = get_some_content('www.website.com')
-favicon = Iconoclast.extract('www.website.com', content)`
+`content = get_some_content('www.website.com')`<br/>
+`favicon = Iconoclast.extract('www.website.com', content)`
 
 `Iconoclast.extract` returns an `Iconoclast::Favicon` instance, from which you can get the URL, content type, size, or access the binary image data. By calling `valid?`, you can check if the favicon is valid based on whatever my standards were when I wrote this (basically, whether or not it's actually an image).
 
