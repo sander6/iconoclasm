@@ -4,7 +4,7 @@ require 'rake'
 begin
   require 'jeweler'
   Jeweler::Tasks.new do |gem|
-    gem.name = "iconoclas,"
+    gem.name = "iconoclasm"
     gem.summary = %Q{Finds favicons and DESTROYS THEM (well, not really, but it will download and save them)}
     gem.description = %Q{Finds favorites icons for web pages on the world wide internets by checking the HTML head or the standard favicon location. Then, do with them what you will.}
     gem.email = "sander.hartlage@gmail.com"
