@@ -1,11 +1,14 @@
 module Iconoclasm
   class Headers
-
+    REGEXP = /^\s*HTTP\/(\d\.\d)\s*(\d{3})\s*(.*)\s*$/i
+    
     attr_reader :version, :code, :message
     
-    def initialize(header_string)
-      parse_http_response(header_string.lines.first.chomp)
-      @header_hash    = parse_header_string(header_string)
+    def initialize(string)
+      header_string = string.dup
+      http_response = header_string.slice!(REGEXP)
+      @version, @code, @message = parse_http_response(http_response.strip)
+      @header_hash              = parse_header_string(header_string.strip)
     end
     
     def [](header)
@@ -47,10 +50,8 @@ module Iconoclasm
     end
     
     def parse_http_response(response)
-      if response.match(/HTTP\/(\d\.\d)\s*(\d{3})\s*(.*)/)
-        @version  = $1
-        @code     = $2.to_i
-        @message  = $3.strip
+      if response.match(REGEXP || "")
+        [ $1.to_f, $2.to_i, $3.chomp.strip ]
       else
         raise Iconoclasm::HTTPError.new(nil, response)
       end
