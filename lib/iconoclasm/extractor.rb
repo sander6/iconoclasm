@@ -46,7 +46,7 @@ module Iconoclasm
           :url            => naive_url,
           :content_length => headers.content_length,
           :content_type   => headers.content_type,
-          :data           => response.body_str
+          :data           => response.body
         })
       end
     end
