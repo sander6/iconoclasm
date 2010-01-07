@@ -7,7 +7,7 @@ module Iconoclasm
     def initialize(string)
       header_string = string.dup
       http_response = header_string.slice!(REGEXP)
-      @version, @code, @message = parse_http_response(http_response.strip)
+      @version, @code, @message = parse_http_response(http_response)
       @header_hash              = parse_header_string(header_string.strip)
     end
     
@@ -50,10 +50,10 @@ module Iconoclasm
     end
     
     def parse_http_response(response)
-      if response.match(REGEXP || "")
+      if response && response.match(REGEXP || "")
         [ $1.to_f, $2.to_i, $3.chomp.strip ]
       else
-        raise Iconoclasm::HTTPError.new(nil, response)
+        [ nil, nil, nil ]
       end
     end
   end
