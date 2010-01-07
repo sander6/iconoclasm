@@ -16,3 +16,10 @@ module Iconoclasm
   end
   
 end
+
+# For 1.8.6 compatibility.
+class String
+  def lines
+    Enumerable::Enumerator.new(self.split("\n"))
+  end
+end unless ''.respond_to?(:lines)
