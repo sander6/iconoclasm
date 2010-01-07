@@ -15,7 +15,7 @@ describe Iconoclasm::Headers do
   describe "parsing the HTTP response" do
     
     it "should extract the HTTP version from the headers" do
-      @headers.version.should == "1.1"
+      @headers.version.should == 1.1
     end
     
     it "should extract the HTTP response code from the headers" do
