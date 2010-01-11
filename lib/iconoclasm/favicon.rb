@@ -1,6 +1,6 @@
 require 'tempfile'
 require 'mime/types'
-require 'uri'
+require 'addressable/uri'
 
 module Iconoclasm
   class Favicon
@@ -92,7 +92,7 @@ module Iconoclasm
     end
     
     def parse_name_from(url)
-      URI.parse(url).path.split('/').last
+      Addressable::URI.parse(url).path.split('/').last
     end
     
     def dump_data(file)

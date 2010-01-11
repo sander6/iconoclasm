@@ -1,5 +1,5 @@
 require 'nokogiri'
-require 'uri'
+require 'addressable/uri'
 
 module Iconoclasm
   module Extractor
@@ -60,7 +60,7 @@ module Iconoclasm
     end
     
     def base_url_of(url)
-      uri = URI.parse(url)
+      uri = Addressable::URI.parse(url)
       "#{uri.scheme}://#{uri.host}"
     end
     
