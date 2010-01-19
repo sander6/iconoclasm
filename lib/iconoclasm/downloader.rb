@@ -18,11 +18,11 @@ module Iconoclasm
     end
     
     def get(url)
-      Typhoeus::Request.get(url, :user_agent => user_agent, :follow_location => true)
+      Typhoeus::Request.get(url, :user_agent => user_agent, :follow_location => true, :timeout => 1000)
     end
     
     def head(url)
-      Typhoeus::Request.head(url, :user_agent => user_agent)
+      Typhoeus::Request.head(url, :user_agent => user_agent, :timeout => 1000)
     end
   end
 end
