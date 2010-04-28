@@ -9,6 +9,7 @@ module Iconoclasm
   
   class << self
     include Iconoclasm::Extractor
+    attr_accessor :timeout
     
     def extract(url, content = nil)
       Iconoclasm::Favicon.new(extract_favicon_from(url, content))
