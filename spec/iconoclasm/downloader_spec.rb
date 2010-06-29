@@ -10,31 +10,45 @@ describe Iconoclasm::Downloader do
   end
   
   describe "GETting a url" do
-    it "should GET the url using Typheous" do
-      Typhoeus::Request.expects(:get).with(@url, instance_of(Hash))
+    it "should GET the url using Curl" do
+      @thing.expects(:curl).with(@url).returns(@curl)
+      @curl.expects(:http_get)
       @thing.get(@url)
-    end
-    
-    it "should set the user agent to the default user agent" do
-      Typhoeus::Request.expects(:get).with(instance_of(String), has_entry(:user_agent => Iconoclasm::Downloader.user_agent))
-      @thing.get(@url)
-    end
-    
-    it "should follow redirects" do
-      Typhoeus::Request.expects(:get).with(instance_of(String), has_entry(:follow_location => true))
-      @thing.get(@url)
-    end
+    end    
   end
   
   describe "HEADing a url" do
-    it "should HEAD the url using Typhoeus" do
-      Typhoeus::Request.expects(:head).with(@url, instance_of(Hash))
+    it "should HEAD the url using Curl" do
+      @thing.expects(:curl).with(@url).returns(@curl)
+      @curl.expects(:http_head)
       @thing.head(@url)
+    end    
+  end
+  
+  describe "building the Curl object" do
+    before do
+      Curl::Easy.expects(:new).with(@url).yields(@curl)
     end
     
     it "should set the user agent to the default user agent" do
-      Typhoeus::Request.expects(:head).with(instance_of(String), has_entry(:user_agent => Iconoclasm::Downloader.user_agent))
-      @thing.head(@url)
+      @curl.stubs(:follow_location=)
+      @curl.stubs(:timeout=)
+      @curl.expects(:useragent=).with(Iconoclasm::Downloader.user_agent)
+      @thing.__send__(:curl, @url)
+    end
+    
+    it "should follow location" do
+      @curl.expects(:follow_location=).with(true)
+      @curl.stubs(:timeout=)
+      @curl.stubs(:useragent=)
+      @thing.__send__(:curl, @url)
+    end
+    
+    it "should set the timeout to 1 second" do
+      @curl.stubs(:follow_location=)
+      @curl.expects(:timeout=).with(1000)
+      @curl.stubs(:useragent=)
+      @thing.__send__(:curl, @url)
     end
   end
 end

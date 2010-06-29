@@ -1,3 +1,12 @@
+require 'rubygems'
+require 'curb'
+
+module Iconoclasm
+  def self.version
+    "1.0.8"
+  end
+end
+
 $:.unshift(File.dirname(__FILE__))
 require 'iconoclasm/downloader'
 require 'iconoclasm/errors'

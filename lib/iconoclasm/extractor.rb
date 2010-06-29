@@ -33,20 +33,20 @@ module Iconoclasm
         Nokogiri::XML(content)
       else
         response = get(url)
-        Nokogiri::XML(response.body) if response.code == 200
+        Nokogiri::XML(response.body_str) if response.response_code == 200
       end
     end
     
     def extract_favicon_from_naive_guess(base_url)
       naive_url = "#{base_url}/favicon.ico"
       response  = get(naive_url)
-      headers   = Iconoclasm::Headers.new(response.headers)
-      if response.code == 200
+      headers   = Iconoclasm::Headers.new(response.header_str)
+      if response.response_code == 200
         throw(:done, {
           :url            => naive_url,
           :content_length => headers.content_length,
           :content_type   => headers.content_type,
-          :data           => response.body
+          :data           => response.body_str
         })
       end
     end

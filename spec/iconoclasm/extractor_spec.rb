@@ -69,7 +69,7 @@ describe Iconoclasm::Extractor do
     
     describe "when content isn't already provided" do
       before do
-        @response = mock('http response', :code => 200, :body => "")
+        @response = mock('http response', :response_code => 200, :body_str => "")
       end
       
       it "should go get the content" do
