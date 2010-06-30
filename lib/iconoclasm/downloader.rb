@@ -1,7 +1,7 @@
 module Iconoclasm
   module Downloader
 
-    @@user_agent = %Q{Mozilla/5.0 (compatible; Iconoclasm/#{Iconoclasm.version}; +http://github.com/sander6/iconoclasm)}
+    @@user_agent = %Q{Mozilla/5.0 (compatible; Iconoclasm/1.0; +http://github.com/sander6/iconoclasm)}
     
     def self.user_agent=(agent)
       @@user_agent = agent
